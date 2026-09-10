@@ -6,27 +6,27 @@ import { sanitizeCardData } from './storage.js';
  * Matches the simple, elegant aesthetic with initials badge and monochrome icons
  */
 
-// Clean monochrome minimalist social icons (self-contained SVG data URIs - zero network latency, zero spam triggers)
+// Clean monochrome minimalist social icons (self-contained Base64 SVG data URIs - zero network latency, zero broken images)
 const SOCIAL_ICONS = {
   linkedin: {
     name: 'LinkedIn',
-    svgData: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"%3E%3C/path%3E%3Crect x="2" y="9" width="4" height="12"%3E%3C/rect%3E%3Ccircle cx="4" cy="4" r="2"%3E%3C/circle%3E%3C/svg%3E'
+    svgData: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTYgOGE2IDYgMCAwIDEgNiA2djdoLTR2LTdhMiAyIDAgMCAwLTItMiAyIDIgMCAwIDAtMiAydjdoLTR2LTdhNiA2IDAgMCAxIDYtNnoiPjwvcGF0aD48cmVjdCB4PSIyIiB5PSI5IiB3aWR0aD0iNCIgaGVpZ2h0PSIxMiI+PC9yZWN0PjxjaXJjbGUgY3g9IjQiIGN5PSI0IiByPSIyIj48L2NpcmNsZT48L3N2Zz4='
   },
   twitter: {
     name: 'X',
-    svgData: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="%2364748b"%3E%3Cpath d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/%3E%3C/svg%3E'
+    svgData: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNjQ3NDhiIj48cGF0aCBkPSJNMTguMjQ0IDIuMjVoMy4zMDhsLTcuMjI3IDguMjYgOC41MDIgMTEuMjRIMTYuMTdsLTUuMjE0LTYuODE3TDQuOTkgMjEuNzVIMS42OGw3LjczLTguODM1TDEuMjU0IDIuMjVIOC4wOGw0LjcxMyA2LjIzMXptLTEuMTYxIDE3LjUyaDEuODMzTDcuMDg0IDQuMTI2SDUuMTE3eiIvPjwvc3ZnPg=='
   },
   github: {
     name: 'GitHub',
-    svgData: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"%3E%3C/path%3E%3C/svg%3E'
+    svgData: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNOSAxOWMtNSAxLjUtNS0yLjUtNy0zbTE0IDZ2LTMuODdhMy4zNyAzLjM3IDAgMCAwLS45NC0yLjYxYzMuMTQtLjM1IDYuNDQtMS41NCA2LjQ0LTdBNS40NCA1LjQ0IDAgMCAwIDIwIDQuNzcgNS4wNyA1LjA3IDAgMCAwIDE5LjkxIDFTMTguNzMuNjUgMTYgMi40OGExMy4zOCAxMy4zOCAwIDAgMC03IDBDNi4yNy42NSA1LjA5IDEgNS4wOSAxQTUuMDcgNS4wNyAwIDAgMCA1IDQuNzdhNS40NCA1LjQ0IDAgMCAwLTEuNSAzLjc4YzAgNS40MiAzLjMgNi42MSA2LjQ0IDdBMy4zNyAzLjM3IDAgMCAwIDkgMTguMTNWMjIiPjwvcGF0aD48L3N2Zz4='
   },
   instagram: {
     name: 'Instagram',
-    svgData: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Crect x="2" y="2" width="20" height="20" rx="5" ry="5"%3E%3C/rect%3E%3Cpath d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"%3E%3C/path%3E%3Cline x1="17.5" y1="6.5" x2="17.51" y2="6.5"%3E%3C/line%3E%3C/svg%3E'
+    svgData: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHJ4PSI1IiByeT0iNSI+PC9yZWN0PjxwYXRoIGQ9Ik0xNiAxMS4zN0E0IDQgMCAxIDEgMTIuNjMgOCA0IDQgMCAwIDEgMTYgMTEuMzd6Ij48L3BhdGg+PGxpbmUgeDE9IjE3LjUiIHkxPSI2LjUiIHgyPSIxNy41MSIgeTI9IjYuNSI+PC9saW5lPjwvc3ZnPg=='
   },
   youtube: {
     name: 'YouTube',
-    svgData: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%2364748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"%3E%3C/path%3E%3Cpolygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"%3E%3C/polygon%3E%3C/svg%3E'
+    svgData: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjIuNTQgNi40MmEyLjc4IDIuNzggMCAwIDAtMS45NC0yQzE4Ljg4IDQgMTIgNCAxMiA0cy02Ljg4IDAtOC42LjQ2YTIuNzggMi43OCAwIDAgMC0xLjk0IDJBMjkgMjkgMCAwIDAgMSAxMS43NWEyOSAyOSAwIDAgMCAuNDYgNS4zM0EyLjc4IDIuNzggMCAwIDAgMy40IDE5YzEuNzIuNDYgOC42LjQ2IDguNi40NnM2Ljg4IDAgOC42LS40NmEyLjc4IDIuNzggMCAwIDAgMS45NC0yIDI5IDI5IDAgMCAwIC40Ni01LjI1IDI5IDI5IDAgMCAwLS40Ni01LjMzeiI+PC9wYXRoPjxwb2x5Z29uIHBvaW50cz0iOS43NSAxNS4wMiAxNS41IDExLjc1IDkuNzUgOC40OCA5Ljc1IDE1LjAyIj48L3BvbHlnb24+PC9zdmc+'
   }
 };
 
@@ -151,11 +151,28 @@ function renderAvatarHtml(d, size = 38) {
 }
 
 /**
+ * Renders company logo if toggled on and provided
+ */
+function renderCompanyLogoHtml(d) {
+  if (d.showLogo === false || !d.logoUrl) return '';
+  return `
+    <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;margin-top:4px;margin-bottom:6px;">
+      <tr>
+        <td valign="middle">
+          <img src="${d.logoUrl}" alt="${d.company || 'Company Logo'}" style="display:block;max-height:36px;max-width:160px;height:auto;width:auto;border:0;outline:none;" />
+        </td>
+      </tr>
+    </table>
+  `.trim();
+}
+
+/**
  * Theme 1: Executive Modern (Ultra-clean, minimalistic layout matching user screenshot)
  */
 function renderExecutiveTheme(d, accent, font) {
   const showAvatar = d.showAvatar !== false;
   const avatarHtml = renderAvatarHtml(d, 38);
+  const logoHtml = renderCompanyLogoHtml(d);
   const socialsHtml = renderSocialBadgesHtml(d.socials);
 
   const titlePart = [d.jobTitle, d.department].filter(Boolean).join(' | ');
@@ -215,6 +232,14 @@ function renderExecutiveTheme(d, accent, font) {
       </table>
     </td>
   </tr>
+
+  ${logoHtml ? `
+  <!-- Company Brand Logo -->
+  <tr>
+    <td style="padding-bottom:10px;">
+      ${logoHtml}
+    </td>
+  </tr>` : ''}
 
   <!-- Social Icons Row -->
   ${socialsHtml ? `
@@ -276,6 +301,7 @@ function renderMinimalistTheme(d, accent, font) {
 function renderGradientTheme(d, accent, font) {
   const showAvatar = d.showAvatar !== false;
   const avatarHtml = renderAvatarHtml(d, 38);
+  const logoHtml = renderCompanyLogoHtml(d);
   const socialsHtml = renderSocialBadgesHtml(d.socials);
   const titlePart = [d.jobTitle, d.department].filter(Boolean).join(' | ');
   const subtitle = [titlePart, d.company].filter(Boolean).join(', ');
@@ -316,6 +342,7 @@ function renderGradientTheme(d, accent, font) {
       </table>
     </td>
   </tr>
+  ${logoHtml ? `<tr><td style="padding-bottom:8px;">${logoHtml}</td></tr>` : ''}
   ${socialsHtml ? `<tr><td style="padding-bottom:12px;">${socialsHtml}</td></tr>` : ''}
   ${d.showDisclaimer && d.disclaimerText ? `<tr><td style="border-top:1px solid #e2e8f0;padding-top:8px;font-size:11px;color:#94a3b8;">${d.disclaimerText}</td></tr>` : ''}
 </table>
@@ -335,6 +362,7 @@ function renderCorporateTheme(d, accent, font) {
 function renderCompactTheme(d, accent, font) {
   const showAvatar = d.showAvatar !== false;
   const avatarHtml = renderAvatarHtml(d, 32);
+  const logoHtml = renderCompanyLogoHtml(d);
 
   return `
 <!-- SigFlow Card: Compact Pill -->
@@ -351,6 +379,10 @@ function renderCompactTheme(d, accent, font) {
     <td valign="middle" style="padding:6px 14px 6px 8px;border-left:1px solid #e2e8f0;">
       <a href="mailto:${d.email}" style="color:#475569;text-decoration:none;font-size:11px;font-weight:500;">${d.email}</a>
     </td>
+    ${logoHtml ? `
+    <td valign="middle" style="padding:6px 10px;border-left:1px solid #e2e8f0;">
+      ${logoHtml}
+    </td>` : ''}
   </tr>
 </table>
 `.trim();
