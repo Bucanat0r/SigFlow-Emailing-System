@@ -81,7 +81,10 @@ async function handleGoogleTokenReceived(accessToken) {
       name: userName,
       email: userEmail,
       avatar: userPic,
-      type: userEmail.endsWith('@gmail.com') ? 'Personal Gmail' : 'Google Workspace'
+      type: userEmail.endsWith('@gmail.com') ? 'Personal Gmail' : 'Google Workspace',
+      isLive: true,
+      oauthToken: accessToken,
+      cardData: { ...window.sigflowState?.cardData, fullName: userName, email: userEmail }
     });
 
     // 2. Fetch primary sendAs address

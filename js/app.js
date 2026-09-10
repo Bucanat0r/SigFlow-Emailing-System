@@ -13,7 +13,8 @@ import {
   saveAccounts,
   getActiveAccount,
   setActiveAccount,
-  addOrUpdateAccount
+  addOrUpdateAccount,
+  removeAccount
 } from './storage.js';
 import { generateSignatureHtml } from './signature.js';
 import { initSimulator, renderAllViews, setViewMode, updateSimulatorAccountInfo } from './simulator.js';
@@ -35,6 +36,30 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initApp() {
+  // Check remember-me and restore active Live account if saved
+  if (state.config.rememberLogin !== false) {
+    const accounts = loadAccounts();
+    // Prioritize explicitly saved active account or any Live account
+    const preferredAcc = (state.config.activeAccountId && accounts.find(a => a.id === state.config.activeAccountId && a.isLive)) ||
+                         accounts.find(a => a.isLive) ||
+                         (state.config.activeAccountId ? accounts.find(a => a.id === state.config.activeAccountId) : null);
+
+    if (preferredAcc) {
+      setActiveAccount(preferredAcc.id);
+      state.activeAccount = preferredAcc;
+      if (preferredAcc.cardData) {
+        state.cardData = { ...state.cardData, ...preferredAcc.cardData };
+      } else if (preferredAcc.isLive) {
+        // Automatically sync email & name to the live user
+        if (state.cardData.email === 'alex.carter@quantumscale.io' || !state.cardData.email) {
+          state.cardData.email = preferredAcc.email;
+          state.cardData.fullName = preferredAcc.name;
+        }
+      }
+      saveSignatureData(state.cardData);
+    }
+  }
+
   // Apply saved or default theme (Light mode default)
   applyTheme(state.config.themePreference || 'light');
 
@@ -672,14 +697,22 @@ function bindAccountLoginSystem() {
 
       const prov = detectEmailProvider(email);
       const isLive = !!appPassword;
+      const rememberCheckbox = document.getElementById('rememberLoginCheckbox');
+      const shouldRemember = rememberCheckbox ? rememberCheckbox.checked : true;
+
+      state.config.rememberLogin = shouldRemember;
 
       const updated = addOrUpdateAccount({
         name: name,
         email: email,
         appPassword: appPassword,
         isLive: isLive,
-        type: prov.name
+        type: prov.name,
+        cardData: isLive ? { ...state.cardData, fullName: name, email: email } : null
       });
+
+      state.config.activeAccountId = updated.id;
+      saveAppConfig(state.config);
 
       state.activeAccount = updated;
       state.cardData.email = updated.email;
@@ -766,41 +799,78 @@ function renderAccountList() {
 
   const accounts = loadAccounts();
 
-  container.innerHTML = accounts.map(acc => `
-    <div class="account-selector-item ${acc.isActive ? 'active' : ''}" data-acc-id="${acc.id}">
-      <div class="account-item-left">
-        <div class="account-item-avatar">
-          ${acc.avatar ? `<img src="${acc.avatar}" alt="" />` : (acc.name || 'G').charAt(0).toUpperCase()}
-        </div>
-        <div class="account-item-info">
-          <span class="account-item-name">${acc.name}</span>
-          <span class="account-item-email">
-            ${acc.email} &bull; ${acc.isLive ? '🟢 LIVE' : '🟡 DEMO'}
-          </span>
-        </div>
-      </div>
-      <div>
-        ${acc.isActive
-          ? `<span class="account-active-badge">
-               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-               Active
-             </span>`
-          : `<button class="btn btn-secondary" style="font-size:0.75rem;padding:4px 10px;" data-switch-id="${acc.id}">Switch</button>`}
-      </div>
-    </div>
-  `).join('');
+  container.innerHTML = accounts.map(acc => {
+    const isLive = Boolean(acc.isLive);
+    const isDemo = Boolean(acc.isDemo || acc.id === 'acc-demo' || acc.id === 'acc-1' || acc.email === 'alex.carter@quantumscale.io');
+    const isActive = Boolean(acc.isActive);
 
+    const badgeHtml = isLive
+      ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;">🟢 LIVE GMAIL</span>`
+      : `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:10px;background:#fef3c7;color:#b45309;border:1px solid #fde68a;">🧪 DEMO ACCOUNT</span>`;
+
+    const avatarInitial = (acc.name || 'G').charAt(0).toUpperCase();
+
+    return `
+      <div class="account-selector-item ${isActive ? 'active' : ''}" data-acc-id="${acc.id}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin-bottom:8px;border-radius:8px;border:1.5px solid ${isActive ? '#2563eb' : '#e2e8f0'};background:${isActive ? '#eff6ff' : '#ffffff'};transition:all 0.15s ease;">
+        <div class="account-item-left" style="display:flex;align-items:center;gap:12px;">
+          <div class="account-item-avatar" style="width:38px;height:38px;border-radius:50%;background:${isLive ? '#072b4f' : '#2563eb'};color:${isLive ? '#38bdf8' : '#ffffff'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.95rem;overflow:hidden;flex-shrink:0;">
+            ${acc.avatar && acc.avatar.startsWith('http') ? `<img src="${acc.avatar}" alt="" style="width:100%;height:100%;object-fit:cover;" />` : avatarInitial}
+          </div>
+          <div class="account-item-info">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="account-item-name" style="font-weight:700;font-size:0.9rem;color:#0f172a;">${acc.name}</span>
+              ${badgeHtml}
+            </div>
+            <span class="account-item-email" style="font-size:0.8rem;color:#64748b;">
+              ${acc.email} ${acc.lastSyncedAt ? `&bull; Synced ${new Date(acc.lastSyncedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
+            </span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          ${isActive
+            ? `<span class="account-active-badge" style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;font-weight:700;color:#166534;background:#dcfce7;padding:5px 10px;border-radius:20px;">
+                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                 Active
+               </span>`
+            : `<button class="btn ${isLive ? 'btn-primary' : 'btn-secondary'}" style="font-size:0.75rem;padding:6px 12px;font-weight:600;" data-switch-id="${acc.id}">Switch</button>`}
+          ${!isDemo && !isActive
+            ? `<button class="btn btn-secondary" style="font-size:0.75rem;padding:6px 8px;color:#ef4444;border-color:#fecaca;" title="Remove this account" data-delete-id="${acc.id}">&times;</button>`
+            : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Switch Account Handler
   container.querySelectorAll('[data-switch-id]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const accId = btn.dataset.switchId;
+      const allAccs = loadAccounts();
+
+      // Save current card state on outgoing account
+      const current = allAccs.find(a => a.id === state.activeAccount?.id);
+      if (current) {
+        current.cardData = { ...state.cardData };
+        saveAccounts(allAccs);
+      }
+
       const newActive = setActiveAccount(accId);
       if (newActive) {
         state.activeAccount = newActive;
-        state.cardData.email = newActive.email;
-        state.cardData.fullName = newActive.name;
-        saveSignatureData(state.cardData);
+        state.config.activeAccountId = newActive.id;
+        saveAppConfig(state.config);
 
+        if (newActive.cardData) {
+          state.cardData = { ...newActive.cardData };
+        } else if (newActive.isDemo || newActive.id === 'acc-demo' || newActive.id === 'acc-1' || newActive.email === 'alex.carter@quantumscale.io') {
+          state.cardData = { ...defaultSignatureData };
+        } else {
+          state.cardData.email = newActive.email;
+          state.cardData.fullName = newActive.name;
+        }
+
+        saveSignatureData(state.cardData);
         populateFormFields();
         renderAllViews(state.cardData);
         updateSyncStatusUI();
@@ -808,8 +878,39 @@ function renderAccountList() {
         renderAccountList();
 
         document.getElementById('accountLoginModal')?.classList.remove('active');
-        showToast('Account Switched', `Active account: ${newActive.email} (${newActive.isLive ? 'LIVE' : 'DEMO'})`, 'info');
+
+        if (newActive.isLive) {
+          showToast('🟢 LIVE PROFILE ACTIVATED', `Switched to ${newActive.email}. Real email dispatch active!`, 'success');
+        } else {
+          showToast('🧪 DEMO PROFILE ACTIVATED', 'Switched to Alex Carter (Interactive Demo Mode).', 'info');
+        }
       }
+    });
+  });
+
+  // Delete Account Handler
+  container.querySelectorAll('[data-delete-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const accId = btn.dataset.deleteId;
+      const nextActive = removeAccount(accId);
+      state.accounts = loadAccounts();
+      if (state.activeAccount?.id === accId) {
+        state.activeAccount = nextActive;
+        if (nextActive.cardData) {
+          state.cardData = { ...nextActive.cardData };
+        } else {
+          state.cardData.email = nextActive.email;
+          state.cardData.fullName = nextActive.name;
+        }
+        saveSignatureData(state.cardData);
+        populateFormFields();
+        renderAllViews(state.cardData);
+        updateSyncStatusUI();
+        updateSimulatorAccountInfo();
+      }
+      renderAccountList();
+      showToast('Account Removed', 'Removed profile from saved list.', 'info');
     });
   });
 }

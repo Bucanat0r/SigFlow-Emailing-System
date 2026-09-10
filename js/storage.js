@@ -61,13 +61,14 @@ export const defaultSignatureData = {
 
 export const defaultAccounts = [
   {
-    id: 'acc-1',
-    name: 'Alex Carter',
+    id: 'acc-demo',
+    name: 'Alex Carter (Demo)',
     email: 'alex.carter@quantumscale.io',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=260&q=80',
     type: 'Google Workspace',
     isActive: true,
     isLive: false,
+    isDemo: true,
     appPassword: '',
     oauthToken: '',
     lastSyncedAt: new Date().toISOString()
@@ -77,7 +78,8 @@ export const defaultAccounts = [
 export const defaultAppConfig = {
   googleClientId: '',
   demoMode: true,
-  activeAccountId: 'acc-1',
+  rememberLogin: true,
+  activeAccountId: '',
   themePreference: 'light',
   autoSyncOnEdit: true
 };
@@ -161,9 +163,30 @@ export function saveAppConfig(config) {
 export function loadAccounts() {
   try {
     const raw = localStorage.getItem(ACCOUNTS_KEY);
-    if (!raw) return [...defaultAccounts];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length ? parsed : [...defaultAccounts];
+    let accounts = raw ? JSON.parse(raw) : null;
+    if (!Array.isArray(accounts) || !accounts.length) {
+      accounts = [...defaultAccounts];
+    }
+
+    // Ensure the Demo Account is always present in the switcher list
+    const hasDemo = accounts.some(a => a.isDemo || a.id === 'acc-demo' || a.id === 'acc-1' || a.email === 'alex.carter@quantumscale.io');
+    if (!hasDemo) {
+      accounts.unshift({
+        id: 'acc-demo',
+        name: 'Alex Carter (Demo)',
+        email: 'alex.carter@quantumscale.io',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=260&q=80',
+        type: 'Google Workspace',
+        isActive: false,
+        isLive: false,
+        isDemo: true,
+        appPassword: '',
+        oauthToken: '',
+        lastSyncedAt: new Date().toISOString()
+      });
+    }
+
+    return accounts;
   } catch (e) {
     return [...defaultAccounts];
   }
@@ -179,7 +202,16 @@ export function saveAccounts(accounts) {
 
 export function getActiveAccount() {
   const accounts = loadAccounts();
-  return accounts.find(a => a.isActive) || accounts[0];
+  const config = loadAppConfig();
+
+  // If rememberLogin is on and we have a preferred active account ID
+  if (config.rememberLogin !== false && config.activeAccountId) {
+    const matched = accounts.find(a => a.id === config.activeAccountId);
+    if (matched) return matched;
+  }
+
+  // Otherwise find currently active account
+  return accounts.find(a => a.isActive) || accounts.find(a => a.isLive) || accounts[0];
 }
 
 export function setActiveAccount(accountId) {
@@ -188,42 +220,83 @@ export function setActiveAccount(accountId) {
     a.isActive = (a.id === accountId || a.email.toLowerCase() === accountId.toLowerCase());
   });
   saveAccounts(accounts);
-  return accounts.find(a => a.isActive);
+
+  const active = accounts.find(a => a.isActive);
+  if (active) {
+    const config = loadAppConfig();
+    config.activeAccountId = active.id;
+    saveAppConfig(config);
+  }
+  return active;
 }
 
-export function addOrUpdateAccount({ name, email, avatar, type = 'Gmail', appPassword = '', isLive = false, oauthToken = '' }) {
+export function removeAccount(accountId) {
+  const accounts = loadAccounts();
+  const filtered = accounts.filter(a => a.id !== accountId && a.email.toLowerCase() !== accountId.toLowerCase());
+
+  // Never delete demo account completely
+  const hasDemo = filtered.some(a => a.isDemo || a.id === 'acc-demo' || a.id === 'acc-1' || a.email === 'alex.carter@quantumscale.io');
+  if (!hasDemo) {
+    filtered.unshift({ ...defaultAccounts[0], isActive: !filtered.some(a => a.isActive) });
+  }
+
+  if (!filtered.some(a => a.isActive)) {
+    filtered[0].isActive = true;
+  }
+
+  saveAccounts(filtered);
+  const active = filtered.find(a => a.isActive);
+  const config = loadAppConfig();
+  if (config.activeAccountId === accountId) {
+    config.activeAccountId = active ? active.id : '';
+    saveAppConfig(config);
+  }
+  return active;
+}
+
+export function addOrUpdateAccount({ name, email, avatar, type = 'Gmail', appPassword = '', isLive = false, oauthToken = '', cardData = null }) {
   const accounts = loadAccounts();
   const existing = accounts.find(a => a.email.toLowerCase() === email.toLowerCase());
+  const isAccountLive = Boolean(isLive || appPassword || oauthToken);
 
   if (existing) {
     existing.name = name || existing.name;
     existing.avatar = avatar || existing.avatar;
     existing.isActive = true;
-    if (appPassword) {
-      existing.appPassword = appPassword;
-      existing.isLive = true;
-    }
-    if (oauthToken) {
-      existing.oauthToken = oauthToken;
-      existing.isLive = true;
-    }
+    existing.isLive = isAccountLive;
+    existing.isDemo = false;
+    if (appPassword) existing.appPassword = appPassword;
+    if (oauthToken) existing.oauthToken = oauthToken;
+    if (cardData) existing.cardData = cardData;
+    existing.lastSyncedAt = new Date().toISOString();
+
     accounts.forEach(a => { if (a.id !== existing.id) a.isActive = false; });
   } else {
     accounts.forEach(a => a.isActive = false);
+    const newId = 'acc-' + Date.now();
     accounts.push({
-      id: 'acc-' + Date.now(),
+      id: newId,
       name: name || email.split('@')[0],
       email: email,
       avatar: avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || email)}&background=1a73e8&color=fff`,
       type: type,
       isActive: true,
-      isLive: !!(appPassword || oauthToken),
+      isLive: isAccountLive,
+      isDemo: false,
       appPassword: appPassword,
       oauthToken: oauthToken,
+      cardData: cardData,
       lastSyncedAt: new Date().toISOString()
     });
   }
 
   saveAccounts(accounts);
-  return accounts.find(a => a.isActive);
+  const active = accounts.find(a => a.isActive);
+
+  // Update app config with preferred active account
+  const config = loadAppConfig();
+  config.activeAccountId = active.id;
+  saveAppConfig(config);
+
+  return active;
 }

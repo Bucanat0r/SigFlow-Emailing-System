@@ -922,6 +922,15 @@
             </div>
           </div>
 
+          <!-- Remember Me Checkbox -->
+          <div class="remember-me-row" style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 16px 0;padding:10px 14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;">
+            <label for="rememberLoginCheckbox" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:0.85rem;color:#1e293b;font-weight:600;margin:0;">
+              <input type="checkbox" id="rememberLoginCheckbox" checked style="width:17px;height:17px;accent-color:#2563eb;cursor:pointer;" />
+              <span>Remember me (Keep me logged in on this device)</span>
+            </label>
+            <span style="font-size:0.75rem;color:#64748b;font-weight:500;">Auto-loads your Live profile</span>
+          </div>
+
           <div style="display:flex;gap:10px;margin-top:16px;">
             <button type="submit" class="btn btn-primary" style="flex:1;padding:12px;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -933,7 +942,13 @@
           </div>
         </form>
 
-        <div class="or-divider-row">or switch between saved profiles</div>
+        <div class="or-divider-row" style="margin:22px 0 12px 0;">
+          Switch Profiles (Live Gmail vs Demo)
+        </div>
+
+        <div style="font-size:0.8rem;color:#64748b;margin-bottom:12px;line-height:1.4;">
+          Your connected Live accounts and the Demo profile are listed below. Click <strong>"Switch"</strong> on any profile to load its signature and settings instantly.
+        </div>
 
         <!-- List of Connected Accounts -->
         <div class="account-selector-list" id="accountSelectorList">
