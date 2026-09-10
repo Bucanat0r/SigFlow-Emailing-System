@@ -1,0 +1,7 @@
+# https://www.robotstxt.org/robotstxt.html
+# Allow all search engines and web crawlers full access to index SigFlow
+User-agent: *
+Allow: /
+
+# Sitemap reference for Google, Bing, and other search engines
+Sitemap: sitemap.xml

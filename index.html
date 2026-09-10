@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SigFlow &bull; Native Gmail Inbox Signature Integration (Approach 2)</title>
+  <meta name="description" content="Design rich email signature cards and push them straight into your native Gmail settings with 1-click Google Workspace integration. No extra dashboards needed." />
+  <meta name="keywords" content="email signature generator, gmail signature sync, google workspace signature, professional email signature, signature card generator, email html signature, native gmail integration" />
+  <meta name="author" content="SigFlow" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="application-name" content="SigFlow" />
+  <meta name="apple-mobile-web-app-title" content="SigFlow" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="SigFlow &bull; Native Gmail Inbox Signature Integration" />
+  <meta property="og:description" content="Design rich email signature cards and push them straight into your native Gmail settings with 1-click Google Workspace integration." />
+  <meta property="og:site_name" content="SigFlow" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&h=630&q=80" />
+  <meta property="og:image:alt" content="SigFlow Email Signature Studio & Gmail Simulator" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SigFlow &bull; Native Gmail Inbox Signature Integration" />
+  <meta name="twitter:description" content="Design rich email signature cards and push them straight into your native Gmail settings with 1-click Google Workspace integration." />
+  <meta name="twitter:image" content="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&h=630&q=80" />
+
+  <!-- Favicon & Web App Manifest -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232563eb'><path d='M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/></svg>" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Structured Data / JSON-LD for Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SigFlow",
+    "alternateName": "SigFlow Email Signature Studio",
+    "description": "Design rich email signature cards and push them straight into your native Gmail or Google Workspace settings with 1-click integration. No extra dashboards needed.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript. Compatible with Chrome, Firefox, Safari, Edge.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "1-Click Native Gmail & Google Workspace API Sync",
+      "Interactive Gmail Web Compose Simulator",
+      "Visual Card Studio with 5 Modern Themes",
+      "Bulletproof Table-Based HTML Output",
+      "Custom Media, Avatars, Logos & CTA Buttons",
+      "Zero Extra Dashboards Required"
+    ]
+  }
+  </script>
+
+  <!-- Google Identity Services (GIS) Client Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Application Stylesheets (High-Contrast Luminous Theme) -->
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/studio.css" />
+  <link rel="stylesheet" href="css/preview.css" />
+  <link rel="stylesheet" href="css/modal.css" />
+</head>
+<body>
+
+  <!-- ========================================================================
+       Top Navigation Header
+       ======================================================================== -->
+  <header class="app-header" id="appHeader">
+    <div class="header-inner">
+      <div class="brand-wrapper">
+        <div class="brand-logo-badge">
+          <!-- SigFlow Mail Push Icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-6l-2 3h-4l-2-3H2"></path>
+            <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <div class="brand-title">
+            SigFlow
+            <span class="brand-badge">Approach 2 &bull; Inbox Integration</span>
+          </div>
+          <div class="brand-subtitle">Native Gmail Signature Sync &amp; Live Dispatcher</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Interactive User Account Pill & Switcher -->
+        <button class="user-account-btn" id="btnUserAccount" title="Switch or login with your Gmail account">
+          <div class="user-avatar-mini">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=260&q=80" alt="Avatar" />
+          </div>
+          <div class="user-account-text">
+            <span class="user-account-name">Alex Carter</span>
+            <span class="user-account-email">alex.carter@quantumscale.io</span>
+          </div>
+          <span class="user-account-badge">Switch / Go Live</span>
+        </button>
+
+        <!-- Live Sync Status Pill -->
+        <div class="sync-status-pill status-connected" id="headerSyncPill">
+          <div class="status-dot"></div>
+          <span id="headerSyncText">Gmail: Ready to Sync</span>
+        </div>
+
+        <!-- Theme Toggle (Light / Dark) -->
+        <button class="btn-theme-toggle" id="btnThemeToggle" title="Toggle Light / Dark mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+
+        <!-- Live Setup / Settings Button -->
+        <button class="btn btn-secondary" id="btnOpenSetupGuide" title="Configure Live Sending Credentials">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Live Settings</span>
+        </button>
+
+        <!-- Header Connect Button -->
+        <button class="btn btn-primary" id="btnHeaderConnectGoogle">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.35 11.1h-9.17v2.98h5.33c-.23 1.25-.94 2.31-2 3.01v2.5h3.24c1.89-1.74 2.98-4.3 2.98-7.39 0-.37-.03-.73-.08-1.1z"/>
+            <path d="M12.18 21c2.7 0 4.96-.89 6.62-2.42l-3.24-2.5c-.9.6-2.05.96-3.38.96-2.6 0-4.8-1.76-5.59-4.12H3.25v2.58C4.94 18.88 8.3 21 12.18 21z"/>
+            <path d="M6.59 12.92c-.2-.6-.31-1.24-.31-1.92s.11-1.32.31-1.92V6.5H3.25C2.58 7.84 2.2 9.38 2.2 11s.38 3.16 1.05 4.5l3.34-2.58z"/>
+            <path d="M12.18 4.96c1.47 0 2.79.51 3.82 1.5l2.87-2.87C17.14 2.02 14.88 1 12.18 1 8.3 1 4.94 3.12 3.25 6.5l3.34 2.58c.79-2.36 2.99-4.12 5.59-4.12z"/>
+          </svg>
+          <span>Sync to Gmail</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       Hero Strip - Highlighting Approach 2 Value Proposition
+       ======================================================================== -->
+  <section class="hero-strip">
+    <div class="hero-banner">
+      <div class="hero-text-col">
+        <div class="hero-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+          Approach 2: Native Inbox Integration &bull; Live Mail Delivery
+        </div>
+        <h1 class="hero-title">Zero-Friction Email Card Integration</h1>
+        <p class="hero-desc">
+          Instead of forcing you or your team into an unfamiliar dashboard every time you write an email, connect your Gmail once.
+          SigFlow generates your card and pushes it <strong>straight into your native Gmail settings</strong>.
+          You can test sending real emails directly through Google servers, or open Gmail on the web where your card is automatically attached.
+        </p>
+      </div>
+
+      <div class="hero-actions-col">
+        <button class="btn btn-google connected" id="btnHeroConnectGoogle">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span>Connect with Google &amp; Sync to Gmail</span>
+        </button>
+        <div class="hero-meta-note">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Real Gmail SMTP (smtp.gmail.com) &bull; Google Workspace API
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Main Application Studio & Simulator Grid
+       ======================================================================== -->
+  <main class="app-main">
+    <div class="studio-grid">
+
+      <!-- ==================================================================
+           LEFT COLUMN: Visual Card Studio & Customizer Controls
+           ================================================================== -->
+      <section class="studio-panel" id="studioPanel">
+        <!-- Studio Header -->
+        <div class="studio-header">
+          <div class="studio-header-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span>Card Studio</span>
+          </div>
+          <div class="studio-actions-quick">
+            <button class="btn-icon-subtle" id="btnResetDefault" title="Reset to Sample Template">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Studio Navigation Tabs -->
+        <nav class="studio-tabs" id="studioTabs">
+          <button class="studio-tab-btn active" data-tab="tabProfile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Profile
+          </button>
+          <button class="studio-tab-btn" data-tab="tabContact">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            Contact
+          </button>
+          <button class="studio-tab-btn" data-tab="tabMedia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+            Media
+          </button>
+          <button class="studio-tab-btn" data-tab="tabCtas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            CTAs
+          </button>
+          <button class="studio-tab-btn" data-tab="tabSocials">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Socials
+          </button>
+          <button class="studio-tab-btn" data-tab="tabStyling">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path></svg>
+            Themes
+          </button>
+        </nav>
+
+        <!-- Scrollable Studio Content -->
+        <div class="studio-content">
+
+          <!-- TAB 1: Profile & Identity -->
+          <div class="tab-pane active" id="tabProfile">
+            <div class="form-section-title">Personal &amp; Professional Identity</div>
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="inputFullName">Full Name</label>
+                <input type="text" id="inputFullName" class="form-control" placeholder="e.g. Alex Carter" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputPronouns">Pronouns <span class="form-label-hint">Optional</span></label>
+                <input type="text" id="inputPronouns" class="form-control" placeholder="e.g. he/him" />
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="inputJobTitle">Job Title</label>
+                <input type="text" id="inputJobTitle" class="form-control" placeholder="Head of Product" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputDepartment">Department</label>
+                <input type="text" id="inputDepartment" class="form-control" placeholder="Growth & Strategy" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputCompany">Company / Organization</label>
+              <input type="text" id="inputCompany" class="form-control" placeholder="Acme Corporation" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputTagline">Company Tagline / One-Liner</label>
+              <input type="text" id="inputTagline" class="form-control" placeholder="Enterprise AI & Automation Infrastructure" />
+            </div>
+          </div>
+
+          <!-- TAB 2: Contact Details -->
+          <div class="tab-pane" id="tabContact">
+            <div class="form-section-title">Direct Contact Information</div>
+            <div class="form-group">
+              <label class="form-label" for="inputEmail">Work Email Address</label>
+              <input type="email" id="inputEmail" class="form-control" placeholder="alex@company.com" />
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="inputPhone">Direct Phone</label>
+                <input type="tel" id="inputPhone" class="form-control" placeholder="+1 (415) 890-2341" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="inputMobile">Mobile / WhatsApp</label>
+                <input type="tel" id="inputMobile" class="form-control" placeholder="+1 (415) 555-0192" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputWebsite">Website URL</label>
+              <input type="url" id="inputWebsite" class="form-control" placeholder="https://quantumscale.io" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="inputAddress">Physical / Office Address</label>
+              <input type="text" id="inputAddress" class="form-control" placeholder="548 Market St, San Francisco, CA" />
+            </div>
+          </div>
+
+          <!-- TAB 3: Media & Photos -->
+          <div class="tab-pane" id="tabMedia">
+            <!-- Avatar Toggle -->
+            <div class="toggle-item" style="margin-bottom:14px;">
+              <div class="toggle-item-info">
+                <span class="toggle-title">Include Headshot Avatar</span>
+                <span class="toggle-desc">Toggle off to reduce image weight and spam triggers</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleAvatar" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-section-title">Headshot Portrait</div>
+            <div class="avatar-preset-row">
+              <button class="avatar-preset-btn selected" type="button" title="Executive 1">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=260&q=80" alt="Avatar 1" />
+              </button>
+              <button class="avatar-preset-btn" type="button" title="Executive 2">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=260&q=80" alt="Avatar 2" />
+              </button>
+              <button class="avatar-preset-btn" type="button" title="Executive 3">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=260&q=80" alt="Avatar 3" />
+              </button>
+              <button class="avatar-preset-btn" type="button" title="Executive 4">
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=260&q=80" alt="Avatar 4" />
+              </button>
+            </div>
+
+            <div class="form-group">
+              <label class="file-upload-box" for="avatarFileInput">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span class="file-upload-label">Upload Custom Headshot</span>
+                <span class="file-upload-sublabel">PNG, JPG or WebP (square recommended)</span>
+                <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" />
+              </label>
+            </div>
+
+            <div class="form-group" style="margin-top:18px;">
+              <label class="form-label">Headshot Avatar Shape</label>
+              <div style="display:flex;gap:16px;margin-top:6px;font-size:0.85rem;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="radio" name="avatarShape" value="circle" checked /> Circle
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="radio" name="avatarShape" value="rounded" /> Rounded
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                  <input type="radio" name="avatarShape" value="square" /> Square
+                </label>
+              </div>
+            </div>
+
+            <!-- Logo Toggle -->
+            <div class="toggle-item" style="margin-top:22px;margin-bottom:14px;">
+              <div class="toggle-item-info">
+                <span class="toggle-title">Include Company Logo</span>
+                <span class="toggle-desc">Toggle off for lightweight text-first deliverability</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleLogo" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-section-title" style="margin-top:12px;">Company Brand Logo</div>
+            <div class="form-group">
+              <label class="file-upload-box" for="logoFileInput">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <span class="file-upload-label">Upload Company Logo</span>
+                <span class="file-upload-sublabel">Transparent PNG recommended</span>
+                <input type="file" id="logoFileInput" accept="image/*" style="display:none;" />
+              </label>
+            </div>
+          </div>
+
+          <!-- TAB 4: Action Badges & CTAs -->
+          <div class="tab-pane" id="tabCtas">
+            <div class="form-section-title">Interactive Action Modules</div>
+
+            <!-- Booking Button Toggle (Off by default) -->
+            <div class="toggle-item">
+              <div class="toggle-item-info">
+                <span class="toggle-title">Calendar Booking Button</span>
+                <span class="toggle-desc">Calendly, Cal.com or HubSpot meeting link (optional, off by default)</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleCta" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group" style="margin-top:8px;">
+              <input type="text" id="inputCtaText" class="form-control" placeholder="Button Text (e.g. 📅 Book a 15-min Call)" />
+            </div>
+            <div class="form-group">
+              <input type="url" id="inputCtaUrl" class="form-control" placeholder="Meeting URL (e.g. https://calendly.com/...)" />
+            </div>
+
+            <!-- Promo Announcement Banner Toggle (Off by default) -->
+            <div class="toggle-item" style="margin-top:16px;">
+              <div class="toggle-item-info">
+                <span class="toggle-title">Announcement Promo Banner</span>
+                <span class="toggle-desc">Sales/webinar banners (optional, off by default to avoid spam triggers)</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="togglePromo" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group" style="margin-top:8px;">
+              <input type="text" id="inputPromoText" class="form-control" placeholder="Promo Text (e.g. 🚀 Quantum Engine 3.0 is live)" />
+            </div>
+            <div class="form-group">
+              <input type="url" id="inputPromoUrl" class="form-control" placeholder="Target Announcement URL" />
+            </div>
+
+            <!-- Eco Disclaimer Toggle -->
+            <div class="toggle-item" style="margin-top:16px;">
+              <div class="toggle-item-info">
+                <span class="toggle-title">Eco &amp; Legal Disclaimer</span>
+                <span class="toggle-desc">Green email notice &amp; confidentiality clause</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleDisclaimer" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-group" style="margin-top:8px;">
+              <textarea id="inputDisclaimerText" class="form-control" rows="2" style="resize:vertical;" placeholder="Disclaimer text..."></textarea>
+            </div>
+          </div>
+
+          <!-- TAB 5: Social Channels -->
+          <div class="tab-pane" id="tabSocials">
+            <div class="form-section-title">Verified Social Profiles</div>
+            <div class="form-group">
+              <label class="form-label" for="inputLinkedin">LinkedIn Profile</label>
+              <input type="url" id="inputLinkedin" class="form-control" placeholder="https://linkedin.com/in/yourprofile" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputTwitter">X / Twitter Handle</label>
+              <input type="url" id="inputTwitter" class="form-control" placeholder="https://x.com/yourhandle" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputGithub">GitHub Profile</label>
+              <input type="url" id="inputGithub" class="form-control" placeholder="https://github.com/organization" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputYoutube">YouTube Channel</label>
+              <input type="url" id="inputYoutube" class="form-control" placeholder="https://youtube.com/@channel" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="inputInstagram">Instagram Profile</label>
+              <input type="url" id="inputInstagram" class="form-control" placeholder="https://instagram.com/account" />
+            </div>
+          </div>
+
+          <!-- TAB 6: Themes & Styling -->
+          <div class="tab-pane" id="tabStyling">
+            <div class="form-section-title">Signature Design Layouts</div>
+            <div class="theme-selector-grid">
+              <div class="theme-card-option selected" data-theme="executive">
+                <div class="theme-card-header">
+                  <span class="theme-card-name">Executive Modern</span>
+                  <span class="theme-tag">Default</span>
+                </div>
+                <div class="theme-card-desc">Dual column layout with vertical accent divider &amp; action button.</div>
+              </div>
+
+              <div class="theme-card-option" data-theme="minimalist">
+                <div class="theme-card-header">
+                  <span class="theme-card-name">Minimalist Tech</span>
+                </div>
+                <div class="theme-card-desc">Ultra-clean monochrome with crisp hairline border.</div>
+              </div>
+
+              <div class="theme-card-option" data-theme="gradient">
+                <div class="theme-card-header">
+                  <span class="theme-card-name">Vibrant Gradient</span>
+                </div>
+                <div class="theme-card-desc">Modern gradient accent border and luminous pill avatar.</div>
+              </div>
+
+              <div class="theme-card-option" data-theme="corporate">
+                <div class="theme-card-header">
+                  <span class="theme-card-name">Corporate Classic</span>
+                </div>
+                <div class="theme-card-desc">Traditional corporate high-trust structure with company badge.</div>
+              </div>
+
+              <div class="theme-card-option" data-theme="compact">
+                <div class="theme-card-header">
+                  <span class="theme-card-name">Compact Pill</span>
+                </div>
+                <div class="theme-card-desc">Space-efficient horizontal pill badge for frequent replies.</div>
+              </div>
+            </div>
+
+            <div class="form-section-title" style="margin-top:20px;">Brand Accent Color</div>
+            <div class="color-picker-row">
+              <button class="color-swatch-btn selected" style="background:#2563eb;" data-color="#2563eb" title="Royal Blue"></button>
+              <button class="color-swatch-btn" style="background:#10b981;" data-color="#10b981" title="Emerald"></button>
+              <button class="color-swatch-btn" style="background:#7c3aed;" data-color="#7c3aed" title="Violet"></button>
+              <button class="color-swatch-btn" style="background:#0284c7;" data-color="#0284c7" title="Sky"></button>
+              <button class="color-swatch-btn" style="background:#e11d48;" data-color="#e11d48" title="Rose"></button>
+              <button class="color-swatch-btn" style="background:#d97706;" data-color="#d97706" title="Amber"></button>
+
+              <div class="color-input-wrapper">
+                <input type="color" id="inputCustomColor" class="color-input-custom" value="#2563eb" title="Custom color picker" />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top:16px;">
+              <label class="form-label" for="selectFontFamily">Email Safe Typography</label>
+              <select id="selectFontFamily" class="form-control">
+                <option value="Inter, Arial, sans-serif">Inter / Modern Clean (Recommended)</option>
+                <option value="Arial, Helvetica, sans-serif">Arial / Standard Universal</option>
+                <option value="Georgia, Times, serif">Georgia / Executive Serif</option>
+                <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI / Corporate</option>
+                <option value="'JetBrains Mono', Consolas, monospace">Monospace / Tech Accent</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           RIGHT COLUMN: Live Preview & Native Gmail Web Simulator
+           ================================================================== -->
+      <section class="preview-panel" id="previewPanel">
+
+        <!-- Control Bar over Preview -->
+        <div class="preview-control-bar">
+          <div class="preview-mode-tabs">
+            <!-- Native Gmail Simulator Tab -->
+            <button class="preview-mode-btn active" data-mode="gmail">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <span>Native Gmail Simulator</span>
+            </button>
+            <!-- Standalone Card Tab -->
+            <button class="preview-mode-btn" data-mode="card">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+              <span>Card Preview</span>
+            </button>
+            <!-- HTML Code Inspector Tab -->
+            <button class="preview-mode-btn" data-mode="html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Email HTML Code</span>
+            </button>
+          </div>
+
+          <div class="preview-quick-actions">
+            <!-- Fallback Clipboard Copy Options -->
+            <button class="btn btn-secondary" id="btnCopyHtml" title="Copy Raw Email Client HTML">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy HTML</span>
+            </button>
+            <button class="btn btn-secondary" id="btnCopyRich" title="Copy Formatted Rich Signature for Manual Paste">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+              <span>Copy Rich</span>
+            </button>
+            <button class="btn btn-primary" id="btnQuickSyncToGmail" title="Push Signature Directly into Gmail Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Push to Gmail</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preview Canvas Container -->
+        <div class="preview-canvas-card">
+          <div class="canvas-header">
+            <div class="canvas-info">
+              <div class="canvas-dot"></div>
+              <span class="canvas-title">Native Inbox Integration Experience</span>
+            </div>
+
+            <!-- Surface Toggle (For Standalone Card View) -->
+            <div class="canvas-surface-toggle" id="surfaceToggle" style="display:none;">
+              <button class="surface-btn active" data-surface="light" title="Light Canvas">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+              </button>
+              <button class="surface-btn" data-surface="dark" title="Dark Canvas">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               VIEW 1: Native Gmail Compose Simulator (With REAL Email Sender)
+               ================================================================ -->
+          <div class="view-gmail-simulator active" id="viewGmail">
+            <!-- Simulated Gmail Top Bar -->
+            <div class="gmail-top-bar">
+              <div class="gmail-logo-group">
+                <!-- Gmail Official Color M Logo -->
+                <svg class="gmail-icon-svg" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M1.5 5.25v13.5c0 .966.784 1.75 1.75 1.75H6V10.5l6 4.5 6-4.5v10h2.75c.966 0 1.75-.784 1.75-1.75V5.25c0-1.428-1.583-2.288-2.774-1.494L12 9.61 2.274 3.756C1.083 2.962 0 3.822 0 5.25z"/>
+                  <path fill="#EA4335" d="M18 10.5l-6 4.5-6-4.5V20.5h12V10.5z"/>
+                </svg>
+                <span class="gmail-app-name">Gmail</span>
+              </div>
+
+              <!-- Interactive Search in Mail -->
+              <div class="gmail-search-bar-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="gmailSearchInput" class="gmail-search-input" placeholder="Search in mail by subject, sender, or content..." />
+              </div>
+
+              <!-- Active Connected Account Pill & Avatar -->
+              <div class="gmail-top-right-group">
+                <div class="gmail-account-pill demo" id="gmailConnectedAccountBadge" title="Connected Google Account">
+                  <span class="pill-dot"></span>
+                  <span class="pill-email">Loading account...</span>
+                  <span class="pill-status">LIVE</span>
+                </div>
+                <div class="gmail-user-avatar" id="gmailTopAvatar" title="Switch or Manage Google Account">
+                  <span>AO</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulated Gmail App Body -->
+            <div class="gmail-app-body">
+              <!-- Left Sidebar -->
+              <div class="gmail-sidebar">
+                <button class="gmail-compose-btn" id="gmailSimComposeBtn" title="Compose a new email with your signature card">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                  <span>Compose</span>
+                </button>
+
+                <div class="gmail-nav-item active" data-folder="inbox">
+                  <div class="gmail-nav-item-left">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1-.9 2-2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    <span>Inbox</span>
+                  </div>
+                  <strong></strong>
+                </div>
+                <div class="gmail-nav-item" data-folder="starred">
+                  <div class="gmail-nav-item-left">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    <span>Starred</span>
+                  </div>
+                </div>
+                <div class="gmail-nav-item" data-folder="sent">
+                  <div class="gmail-nav-item-left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <span>Sent</span>
+                  </div>
+                </div>
+                <div class="gmail-nav-item" data-folder="drafts">
+                  <div class="gmail-nav-item-left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    <span>Drafts</span>
+                  </div>
+                </div>
+                <div class="gmail-nav-item" data-folder="trash">
+                  <div class="gmail-nav-item-left">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Trash</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Mailbox / Message List -->
+              <div class="gmail-content">
+                <!-- Action Bar above Email List -->
+                <div class="gmail-action-bar">
+                  <div class="action-bar-left">
+                    <input type="checkbox" title="Select all" />
+                    <button class="gmail-icon-btn" id="btnRefreshMailbox" title="Refresh messages">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    </button>
+                    <button class="gmail-icon-btn" title="Mark as read">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    </button>
+                  </div>
+                  <div class="action-bar-right">
+                    <span class="mailbox-pagination-text" id="mailboxCountText">1-10 of 10</span>
+                  </div>
+                </div>
+
+                <!-- Inbox Email Rows List -->
+                <div class="gmail-email-list" id="gmailEmailList">
+                  <!-- Dynamically populated from webmail.js -->
+                </div>
+
+                <!-- Full Email Detail Reading View (Initially Hidden) -->
+                <div class="gmail-email-detail-view" id="gmailEmailDetailView" style="display:none;">
+                  <!-- Rendered dynamically on email click -->
+                </div>
+              </div>
+
+              <!-- ==============================================================
+                   THE ICONIC GMAIL COMPOSE MODAL (REAL EMAIL SENDER)
+                   ============================================================== -->
+              <div class="gmail-compose-window" id="gmailComposeWindow" style="display:flex;">
+                <!-- Compose Header -->
+                <div class="compose-header">
+                  <div class="compose-title">
+                    <span>New Message</span>
+                    <span class="compose-sync-badge" id="composeSyncBadge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      SigFlow Signature Active
+                    </span>
+                  </div>
+                  <div class="compose-window-controls">
+                    <svg id="composeMinimizeBtn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+                    <svg id="composeCloseBtn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </div>
+                </div>
+
+                <!-- Recipient Field (Supports multiple emails separated by commas!) -->
+                <div class="compose-field-row">
+                  <span class="compose-field-label">To</span>
+                  <input type="text" class="compose-field-input" id="composeToInput" placeholder="Recipients (e.g. name@gmail.com, client@yahoo.com)" />
+                </div>
+
+                <!-- Subject Field -->
+                <div class="compose-field-row">
+                  <span class="compose-field-label">Subject</span>
+                  <input type="text" class="compose-field-input" id="composeSubjectInput" value="Following up on our chat" placeholder="Subject" />
+                </div>
+
+                <!-- Message Body with Injected Signature -->
+                <div class="compose-body-area">
+                  <div class="compose-text-editable" id="composeBodyText" contenteditable="true">
+                    <p>Hi there,</p>
+                    <p>Great connecting earlier today. Let me know if you have any questions on your end.</p>
+                    <p>Best regards,</p>
+                  </div>
+
+                  <!-- Per-Message Add-on Toggles (Off by default for deliverability) -->
+                  <div class="compose-context-toolbar" id="composeContextToolbar">
+                    <span class="context-toolbar-label">Optional Add-ons:</span>
+                    <button type="button" class="btn-context-toggle" id="btnToggleDraftCta" title="Click to include/exclude calendar booking CTA for this email">
+                      <span class="toggle-icon">📅</span>
+                      <span class="toggle-text">Booking CTA</span>
+                      <span class="toggle-status" id="statusDraftCta">Off</span>
+                    </button>
+                    <button type="button" class="btn-context-toggle" id="btnToggleDraftPromo" title="Click to include/exclude promo banner for this email">
+                      <span class="toggle-icon">🚀</span>
+                      <span class="toggle-text">Promo Banner</span>
+                      <span class="toggle-status" id="statusDraftPromo">Off</span>
+                    </button>
+                  </div>
+
+                  <!-- The Dynamic Injected Signature -->
+                  <div class="compose-signature-divider"></div>
+                  <div class="compose-injected-signature" id="gmailInjectedSignature">
+                    <!-- Dynamic HTML injected here -->
+                  </div>
+                </div>
+
+                <!-- Compose Formatting & Send Footer -->
+                <div class="compose-footer">
+                  <div class="compose-send-group">
+                    <button class="btn-gmail-send" id="gmailSimSendBtn" title="Click to send this email">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                      <span>Send</span>
+                    </button>
+                    <button class="btn-gmail-send-dropdown" id="btnLaunchNativeGmailCompose" title="Open and send directly inside real web Gmail in a new tab">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
+                    </button>
+                  </div>
+
+                  <div style="font-size:0.75rem;color:#64748b;margin-left:12px;">
+                    <a href="javascript:void(0)" id="btnOpenInWebGmailLink" style="color:#2563eb;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+                      <span>Open in real Gmail</span>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                  </div>
+
+                  <div class="compose-tools-group" style="margin-left:auto;">
+                    <span class="compose-tool-btn" title="Formatting options">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+                    </span>
+                    <span class="compose-tool-btn" title="Attach files">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </span>
+                    <span class="compose-tool-btn" title="Insert link">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                    </span>
+                    <span class="compose-tool-btn" title="Insert photo">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </span>
+                    <span class="compose-tool-btn" title="Insert signature" style="color:#0b57d0;">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================
+               VIEW 2: Standalone Card Preview
+               ================================================================ -->
+          <div class="view-card-container" id="viewCard" data-surface="light" style="display:none;">
+            <div class="sig-card-wrapper" id="signatureCardPreview">
+              <!-- Live card rendered here -->
+            </div>
+          </div>
+
+          <!-- ================================================================
+               VIEW 3: HTML Code Inspector
+               ================================================================ -->
+          <div class="view-html-container" id="viewHtml" style="display:none;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span style="font-size:0.88rem;font-weight:700;color:#0f172a;">
+                Email-Client Safe HTML Markup (Inline CSS, Tables)
+              </span>
+              <button class="btn btn-secondary" id="btnCopyHtmlModal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy to Clipboard
+              </button>
+            </div>
+            <pre class="html-code-box" id="htmlCodeOutput"></pre>
+          </div>
+
+        </div>
+
+        <!-- Live Sync Status Bar (Bottom of Preview) -->
+        <div class="sync-status-bar">
+          <div class="sync-status-info">
+            <div class="sync-icon-box connected" id="syncStatusIconBox">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </div>
+            <div>
+              <div class="sync-title-text" id="syncTitleText">Approach 2: Native Gmail Sync Ready</div>
+              <div class="sync-subtitle-text" id="syncStatusDesc">
+                Connected to Gmail (alex.carter@quantumscale.io) &bull; Synchronized via users.settings.sendAs.patch
+              </div>
+            </div>
+          </div>
+
+          <a href="https://mail.google.com/mail/u/0/#settings/general" target="_blank" class="btn btn-secondary" style="font-size:0.82rem;padding:8px 16px;">
+            <span>Open Gmail Web Settings</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+          </a>
+        </div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ========================================================================
+       MODAL 1: Account Login & MULTI-PROVIDER EMAIL SETUP MODAL
+       ======================================================================== -->
+  <div class="modal-backdrop" id="accountLoginModal">
+    <div class="modal-dialog account-login-dialog">
+      <div class="modal-header">
+        <div class="modal-title" style="display:flex;align-items:center;gap:8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          Connect Any Email Account (Yahoo, Outlook, Gmail, etc.)
+        </div>
+        <button class="modal-close-btn" id="btnCloseAccountModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Supported Providers Pills -->
+        <div class="provider-badges-row" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <span class="provider-pill active" data-provider="all" style="font-size:0.75rem;padding:4px 10px;border-radius:12px;background:#e0e7ff;color:#3730a3;font-weight:600;display:inline-flex;align-items:center;gap:4px;">
+            <span>🌐 All Major Providers Supported</span>
+          </span>
+          <span class="provider-pill" data-provider="yahoo" style="font-size:0.75rem;padding:4px 8px;border-radius:12px;background:#f3e8ff;color:#6b21a8;font-weight:600;">
+            Yahoo Mail
+          </span>
+          <span class="provider-pill" data-provider="outlook" style="font-size:0.75rem;padding:4px 8px;border-radius:12px;background:#e0f2fe;color:#0369a1;font-weight:600;">
+            Outlook / Hotmail
+          </span>
+          <span class="provider-pill" data-provider="gmail" style="font-size:0.75rem;padding:4px 8px;border-radius:12px;background:#fee2e2;color:#991b1b;font-weight:600;">
+            Google Gmail
+          </span>
+          <span class="provider-pill" data-provider="icloud" style="font-size:0.75rem;padding:4px 8px;border-radius:12px;background:#f1f5f9;color:#334155;font-weight:600;">
+            Apple iCloud
+          </span>
+          <span class="provider-pill" data-provider="zoho" style="font-size:0.75rem;padding:4px 8px;border-radius:12px;background:#fef3c7;color:#92400e;font-weight:600;">
+            Zoho Mail
+          </span>
+        </div>
+
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:var(--radius-md);padding:12px 14px;margin-bottom:16px;">
+          <div style="font-weight:700;font-size:0.85rem;color:#1e40af;margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            Send &amp; Receive to Any Recipient
+          </div>
+          <div style="font-size:0.8rem;color:#1e3a8a;line-height:1.45;">
+            You can compose and send emails to <strong>any provider</strong> (Yahoo, Outlook, Gmail, corporate domains). To deliver real emails through your own address, connect using an <strong>App Password</strong> below.
+          </div>
+        </div>
+
+        <!-- Add / Login to Email Form -->
+        <form id="addAccountForm">
+          <div class="form-group">
+            <label class="form-label" for="loginNameInput">Your Sender Name</label>
+            <input type="text" id="loginNameInput" class="form-control" placeholder="e.g. Michael Smith" required />
+          </div>
+
+          <div class="form-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <label class="form-label" for="loginEmailInput" style="margin-bottom:0;">Your Email Address</label>
+              <span id="detectedProviderBadge" style="font-size:0.75rem;font-weight:600;padding:2px 8px;border-radius:6px;background:#f1f5f9;color:#475569;">Auto-detecting...</span>
+            </div>
+            <input type="email" id="loginEmailInput" class="form-control" placeholder="e.g. user@yahoo.com or user@gmail.com" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginAppPasswordInput" style="display:flex;justify-content:space-between;align-items:center;">
+              <span id="appPasswordLabel">Provider App Password</span>
+              <a href="https://login.yahoo.com/account/security" target="_blank" id="appPasswordHelpLink" style="font-size:0.75rem;font-weight:600;color:#2563eb;">Get Yahoo App Password &rarr;</a>
+            </label>
+            <input type="password" id="loginAppPasswordInput" class="form-control" placeholder="Paste generated App Password" />
+            <div class="form-label-hint" id="appPasswordInstructions" style="margin-top:6px;color:#64748b;font-size:0.75rem;line-height:1.4;">
+              Type your email above to see step-by-step App Password instructions for your provider.
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button type="submit" class="btn btn-primary" style="flex:1;padding:12px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Activate Live Sending &amp; Save</span>
+            </button>
+            <button type="button" class="btn btn-secondary" id="btnTestCredentials" style="padding:12px 16px;">
+              <span>Test Connection</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="or-divider-row">or switch between saved profiles</div>
+
+        <!-- List of Connected Accounts -->
+        <div class="account-selector-list" id="accountSelectorList">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 2: Google OAuth Consent Screen Simulation
+       ======================================================================== -->
+  <div class="modal-backdrop" id="googleAuthModal">
+    <div class="google-auth-dialog">
+      <div class="google-auth-header">
+        <!-- Google "G" SVG Logo -->
+        <svg class="google-g-logo" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        <h2 class="google-auth-title">SigFlow wants to access your Google Account</h2>
+        <div class="google-auth-sub">This will allow SigFlow to update your default Gmail signature card.</div>
+      </div>
+
+      <div class="google-auth-account-badge">
+        <div class="account-pic">A</div>
+        <div class="account-details">
+          <span class="account-name">Alex Carter</span>
+          <span class="account-email">alex.carter@quantumscale.io</span>
+        </div>
+      </div>
+
+      <!-- Consent Body -->
+      <div id="googleConsentBody">
+        <div class="google-permissions-box">
+          <div class="permission-lead">SigFlow will have permission to:</div>
+
+          <div class="permission-item">
+            <div class="permission-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div class="permission-desc">
+              <strong>Manage your primary Gmail send-as signature settings</strong>
+              <span>Scope: https://www.googleapis.com/auth/gmail.settings.basic</span>
+            </div>
+          </div>
+
+          <div class="permission-item">
+            <div class="permission-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"></path></svg>
+            </div>
+            <div class="permission-desc">
+              <strong>View your Google Workspace email address and user profile</strong>
+              <span>Used to identify the primary alias for signature updates.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="google-auth-actions">
+          <button type="button" class="btn-google-cancel" id="btnGoogleConsentCancel">Cancel</button>
+          <button type="button" class="btn-google-allow" id="btnGoogleConsentAllow">Allow &amp; Authorize Push</button>
+        </div>
+      </div>
+
+      <!-- Sync Progress Spinner (Animated during push) -->
+      <div class="sync-progress-wrap" id="googleSyncProgress">
+        <div class="sync-spinner"></div>
+        <div class="sync-step-text" id="googleSyncStepText">Authorizing with Google Identity Services...</div>
+        <div class="sync-substep-text" id="googleSyncSubText">Establishing secure OAuth 2.0 handshake</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL 3: Google Cloud Setup Wizard & Client ID Configuration
+       ======================================================================== -->
+  <div class="modal-backdrop" id="setupGuideModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Live Sending &amp; Google Cloud Config
+        </div>
+        <button class="modal-close-btn" id="btnCloseSetupGuide">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p style="font-size:0.875rem;color:var(--text-secondary);margin-bottom:20px;">
+          Choose how you want to send real live emails and sync signatures:
+        </p>
+
+        <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:var(--radius-md);padding:16px;margin-bottom:20px;">
+          <div style="font-weight:700;font-size:0.95rem;color:#0f172a;margin-bottom:6px;">
+            Method 1: Gmail App Password (Recommended &bull; Fast)
+          </div>
+          <div style="font-size:0.84rem;color:#475569;line-height:1.5;">
+            Create a 16-character password in your Google Security settings. Allows immediate live email dispatching through <code>smtp.gmail.com</code> without registering Google Cloud apps.
+            <br/>
+            <button type="button" class="btn btn-primary" style="font-size:0.8rem;padding:6px 14px;margin-top:10px;" onclick="document.getElementById('setupGuideModal').classList.remove('active');document.getElementById('accountLoginModal').classList.add('active');">
+              Configure App Password Now
+            </button>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:var(--radius-md);padding:16px;">
+          <div style="font-weight:700;font-size:0.95rem;color:#0f172a;margin-bottom:6px;">
+            Method 2: Google OAuth 2.0 Web Client ID
+          </div>
+          <div class="form-group" style="margin-top:10px;">
+            <label class="form-label" for="inputGoogleClientId">Google OAuth Client ID</label>
+            <input type="text" id="inputGoogleClientId" class="form-control" placeholder="xxxx-xxxx.apps.googleusercontent.com" />
+          </div>
+          <button class="btn btn-secondary" id="btnSaveClientId" style="margin-top:8px;">Save Client ID</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Global Toast Notifications Container
+       ======================================================================== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
